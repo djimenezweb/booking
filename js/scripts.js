@@ -1,3 +1,4 @@
+// CONSTANTES
 const date = new Date();
 const currentYear = date.getFullYear();
 const currentMonth = date.getMonth();
@@ -11,6 +12,7 @@ const hoursElement = document.getElementById('hours');
 const reserveElement = document.getElementById('reserve');
 const reserveStatusElement = document.getElementById('reserve-status');
 
+// Función para saber si un año es bisiesto
 const leapYear = year => {
   if ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) {
     return true;
@@ -19,6 +21,7 @@ const leapYear = year => {
   }
 };
 
+// OBJETOS Y ARRAYS
 const daysOfMonth = {
   January: 31,
   February: leapYear(currentYear) ? 29 : 28,
@@ -37,6 +40,9 @@ const daysOfMonth = {
 const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
+// FUNCIONES
+
+// Función para crear la cabecera del calendario con los días de la semana
 const createCalendarHead = () => {
   const fragment = document.createDocumentFragment();
   daysOfWeek.forEach(day => {
@@ -47,6 +53,7 @@ const createCalendarHead = () => {
   calendarElement.prepend(fragment);
 };
 
+// Función para crear el calendario
 const createCalendar = () => {
   const fragment = document.createDocumentFragment();
   for (let day = 1; day <= daysOfMonth[months[currentMonth]]; day++) {
@@ -67,17 +74,20 @@ const createCalendar = () => {
   calendarElement.append(fragment);
 };
 
+// Función para colocar el primer día del mes en su sitio
 const setFirstDay = () => {
   const date2 = new Date(currentYear, currentMonth, 1);
   let column = date2.getDay() === 0 ? 7 : date2.getDay();
   rootStyles.setProperty('--first-day-column', column);
 };
 
+// Función que devuelve en qué día de la semana cae un día del mes y año en curso
 const checkDay = day => {
   const date2 = new Date(currentYear, currentMonth, day);
   return date2.getDay();
 };
 
+// Función que devuelve el número de comensales según el día de la semana
 const setDinners = day => {
   const daySelected = checkDay(day);
   if (daySelected >= 1 && daySelected <= 4) {
@@ -87,6 +97,7 @@ const setDinners = day => {
   }
 };
 
+// Función para crear el desplegable de turnos (mañana o tarde)
 const createShifts = () => {
   const fragment = document.createDocumentFragment();
   let newOption = document.createElement('option');
@@ -106,6 +117,7 @@ const createShifts = () => {
   shiftElement.append(fragment);
 };
 
+// Función para crear el desplegable de número de comensales
 const createDinners = day => {
   dinnersElement.removeAttribute('disabled');
   const fragment = document.createDocumentFragment();
@@ -128,6 +140,7 @@ const createDinners = day => {
   dinnersElement.append(fragment);
 };
 
+// El calendario escucha clics, aplica recuadro al día seleccionado y llama a la función createDinners, que crea el desplegable de número de comensales
 calendarElement.addEventListener('click', ev => {
   document.querySelectorAll('.day').forEach(item => item.classList.remove('selected'));
   document.querySelectorAll('option').forEach(item => item.remove());
@@ -136,11 +149,16 @@ calendarElement.addEventListener('click', ev => {
   createDinners(ev.target.dataset.day);
 });
 
+// El desplegable de comensales escucha cambios y llama a la función createShifts, que crea el desplegable de turnos
 dinnersElement.addEventListener('change', () => {
   shiftElement.removeAttribute('disabled');
   createShifts();
 });
 
+// Funciones que crean la cabecera del calendario, el calendario y coloca el primer día en su sitio.
 createCalendarHead();
 createCalendar();
 setFirstDay();
+
+// Siguiente paso:
+// Hacer event listener en el desplegable de turnos, hacer una función para crear el desplegable de horarios.
