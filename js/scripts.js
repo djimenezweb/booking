@@ -34,23 +34,8 @@ const daysOfMonth = {
   December: 31
 };
 
-/* const daysOfMonth = {
-  0: 31,
-  1: leapYear(currentYear) ? 29 : 28,
-  2: 31,
-  3: 30,
-  4: 31,
-  5: 30,
-  6: 31,
-  7: 31,
-  8: 30,
-  9: 31,
-  10: 30,
-  11: 31
-}; */
-
 const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-const months = ['January', 'February'];
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 const createCalendarHead = () => {
   const fragment = document.createDocumentFragment();
@@ -112,11 +97,11 @@ const createShifts = () => {
   newOption.textContent = 'Morning';
   newOption.value = 'morning';
   fragment.append(newOption);
-  console.log(checkDay(calendarElement.querySelector('.selected').dataset.day));
-  //SEGUIR POR AQUÍ
-  newOption = document.createElement('option');
-  newOption.textContent = 'Afternoon';
-  newOption.value = 'afternoon';
+  if (checkDay(calendarElement.querySelector('.selected').dataset.day) > 0) {
+    newOption = document.createElement('option');
+    newOption.textContent = 'Afternoon';
+    newOption.value = 'afternoon';
+  }
   fragment.append(newOption);
   shiftElement.append(fragment);
 };
