@@ -12,6 +12,8 @@ const hoursElement = document.getElementById('hours');
 const reserveElement = document.getElementById('reserve');
 const reserveStatusElement = document.getElementById('reserve-status');
 
+let selectedDay;
+
 // Función para saber si un año es bisiesto
 const leapYear = year => {
   if ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) {
@@ -38,7 +40,19 @@ const daysOfMonth = {
 };
 
 const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+const hours = {
+  morning: {
+    start: 6,
+    end: 14
+  },
+  afternoon: {
+    start: 15,
+    end: 22
+  }
+};
 
 // FUNCIONES
 
@@ -97,8 +111,32 @@ const setDinners = day => {
   }
 };
 
+// Función para crear el desplegable de horas
+const createHours = shift => {
+  hoursElement.innerHTML = '';
+  const fragment = document.createDocumentFragment();
+  let newOption = document.createElement('option');
+  newOption.textContent = 'Select hour';
+  newOption.value = 0;
+  fragment.append(newOption);
+  for (let index = hours[shift].start; index <= hours[shift].end; index++) {
+    newOption = document.createElement('option');
+    newOption.textContent = `${index}:00`;
+    newOption.value = `${index}:00`;
+    fragment.append(newOption);
+    if (index < hours[shift].end) {
+      newOption = document.createElement('option');
+      newOption.textContent = `${index}:30`;
+      newOption.value = `${index}:30`;
+      fragment.append(newOption);
+    }
+  }
+  hoursElement.append(fragment);
+};
+
 // Función para crear el desplegable de turnos (mañana o tarde)
 const createShifts = () => {
+  shiftElement.innerHTML = '';
   const fragment = document.createDocumentFragment();
   let newOption = document.createElement('option');
   newOption.textContent = 'Select shift';
@@ -142,9 +180,12 @@ const createDinners = day => {
 
 // El calendario escucha clics, aplica recuadro al día seleccionado y llama a la función createDinners, que crea el desplegable de número de comensales
 calendarElement.addEventListener('click', ev => {
+  shiftElement.disabled = true;
+  hoursElement.disabled = true;
+  reserveElement.disabled = true;
   document.querySelectorAll('.day').forEach(item => item.classList.remove('selected'));
-  document.querySelectorAll('option').forEach(item => item.remove());
   if (ev.target.classList.contains('disabled') || !ev.target.classList.contains('day')) return;
+  selectedDay = ev.target.dataset.day;
   ev.target.classList.add('selected');
   createDinners(ev.target.dataset.day);
 });
@@ -155,10 +196,20 @@ dinnersElement.addEventListener('change', () => {
   createShifts();
 });
 
+// El desplegable de turnos escucha cambios y llama a la función createHours, que crea el desplegable de turnos
+shiftElement.addEventListener('change', ev => {
+  hoursElement.removeAttribute('disabled');
+  if (ev.target.value === '0') return;
+  createHours(ev.target.value);
+});
+
+// El desplegable de horas escucha cambios
+hoursElement.addEventListener('change', ev => {
+  reserveElement.disabled = false;
+  reserveStatusElement.textContent = `Has seleccionado una reserva para ${dinnersElement.value} persona(s) el día ${selectedDay} a las ${hoursElement.value}`;
+});
+
 // Funciones que crean la cabecera del calendario, el calendario y coloca el primer día en su sitio.
 createCalendarHead();
 createCalendar();
 setFirstDay();
-
-// Siguiente paso:
-// Hacer event listener en el desplegable de turnos, hacer una función para crear el desplegable de horarios.
